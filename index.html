@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Upload JSON Array of Objects</title>
+  <title>Upload and Update JSON Array</title>
   <style>
     /* Basic Reset */
     * {
@@ -57,7 +57,7 @@
       background-color: #0056b3;
     }
 
-    .file-info {
+    .array-section {
       margin-top: 20px;
       padding: 10px;
       background-color: #f9f9f9;
@@ -65,22 +65,38 @@
       border-radius: 4px;
       font-size: 14px;
       color: #555;
+      word-wrap: break-word;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
 
   <div class="upload-container">
-    <h2>Upload JSON File</h2>
+    <h2>Upload JSON to Update Array</h2>
     
     <!-- File input to upload JSON file -->
     <input type="file" id="fileInput" accept=".json">
-    <button id="uploadButton">Upload</button>
+    <button id="uploadButton">Upload and Update</button>
 
-    <div id="fileInfo" class="file-info"></div>
+    <!-- Section to display the updated array -->
+    <div id="arraySection" class="array-section"></div>
   </div>
 
   <script>
+    // Sample array that will be updated
+    let myArray = [
+      { id: 1, name: "John Doe", email: "john@example.com" },
+      { id: 2, name: "Jane Smith", email: "jane@example.com" }
+    ];
+
+    // Display the initial array in the UI
+    function displayArray() {
+      const arraySection = document.getElementById('arraySection');
+      arraySection.textContent = JSON.stringify(myArray, null, 2); // Display array nicely formatted
+    }
+
+    // Event listener for upload button
     document.getElementById('uploadButton').addEventListener('click', function() {
       const fileInput = document.getElementById('fileInput');
       const file = fileInput.files[0];  // Get the first selected file
@@ -104,11 +120,12 @@
           // Parse the content of the file into a JavaScript object (array of objects)
           const data = JSON.parse(event.target.result);
 
-          // Display the file content (bulk array of objects)
-          displayFileInfo(data);
+          // Update myArray with the contents of the uploaded JSON file
+          // For this example, we will append the data
+          myArray = [...myArray, ...data];
 
-          // Simulate an upload or further processing
-          simulateUpload(data);
+          // Display the updated array
+          displayArray();
 
         } catch (error) {
           alert('Error parsing the JSON file. Please make sure it is valid.');
@@ -119,21 +136,8 @@
       reader.readAsText(file);
     });
 
-    function displayFileInfo(data) {
-      const fileInfo = document.getElementById('fileInfo');
-      fileInfo.innerHTML = `
-        <strong>Number of Objects:</strong> ${data.length}<br>
-        <strong>First Object:</strong> <pre>${JSON.stringify(data[0], null, 2)}</pre>
-      `;
-    }
-
-    function simulateUpload(data) {
-      // Simulate the upload process (replace with actual upload logic)
-      setTimeout(() => {
-        console.log('Uploading data:', data);
-        alert('Data uploaded successfully!');
-      }, 2000);  // Simulate a 2-second delay
-    }
+    // Initial display of the array
+    displayArray();
   </script>
 
 </body>
