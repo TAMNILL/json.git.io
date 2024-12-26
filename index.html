@@ -82,6 +82,18 @@
     .incorrect {
       color: red;
     }
+
+    /* File upload */
+    .file-upload-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .file-upload-container input {
+      padding: 10px;
+      font-size: 16px;
+    }
+
   </style>
 </head>
 <body>
@@ -91,10 +103,17 @@
     <div id="quiz"></div>
     <button class="button" id="nextButton">Next Question</button>
     <div id="result" class="result"></div>
+
+    <!-- File Upload to add more questions -->
+    <div class="file-upload-container">
+      <h3>Add More Questions</h3>
+      <input type="file" id="fileInput" accept=".json">
+      <button class="button" id="uploadButton">Upload JSON</button>
+    </div>
   </div>
 
   <script>
-    const quizData = [
+    let quizData = [
       {
         "Question": "What is the capital city of France?",
         "Options": [
@@ -199,6 +218,48 @@
       resultContainer.innerHTML = `Your score: ${score} out of ${quizData.length}`;
       nextButton.style.display = 'none';
     }
+
+    // Handle file upload to add more questions
+    document.getElementById('uploadButton').addEventListener('click', function() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];  // Get the first selected file
+      
+      if (!file) {
+        alert('Please select a JSON file to upload.');
+        return;
+      }
+
+      // Check if the file is a JSON file
+      if (file.type !== 'application/json') {
+        alert('Please upload a valid JSON file.');
+        return;
+      }
+
+      // Create a FileReader instance to read the content of the file
+      const reader = new FileReader();
+      
+      reader.onload = function(event) {
+        try {
+          // Parse the content of the file into a JavaScript object (array of objects)
+          const data = JSON.parse(event.target.result);
+
+          // Add the new questions to the existing quiz data
+          quizData = [...quizData, ...data];
+
+          // Notify the user and reload the quiz with the updated data
+          alert('Questions added successfully!');
+          currentQuestionIndex = 0;
+          score = 0;
+          loadQuestion();
+
+        } catch (error) {
+          alert('Error parsing the JSON file. Please make sure it is valid.');
+        }
+      };
+
+      // Read the file as text
+      reader.readAsText(file);
+    });
 
     // Start the quiz
     loadQuestion();
